@@ -4,7 +4,11 @@ This fork is Julavision's booking app, **VisionCal**, at https://book.julavision
 Everything that makes it VisionCal instead of Cal.diy lives in this folder and is
 applied **at build time** by `apply.sh` — the first step of the Vercel build command:
 
-    cd ../.. && sh branding/apply.sh && yarn db-deploy && NODE_OPTIONS=--max-old-space-size=7168 yarn build
+    cd ../.. && sh branding/apply.sh && yarn db-deploy && yarn workspace @calcom/prisma seed-app-store && NODE_OPTIONS=--max-old-space-size=7168 yarn build
+
+`seed-app-store` is what cal.diy's own Docker image runs on every boot. Without it the
+app store is empty — no PayPal, Zoom or Google to connect. It's idempotent and keeps
+any keys entered under Settings → Admin → Apps.
 
 Nothing in cal.diy's own files is committed differently, so **Sync fork** from
 upstream never conflicts.
@@ -12,10 +16,11 @@ upstream never conflicts.
 | What | How |
 |---|---|
 | Name, support email, company | Vercel env: `NEXT_PUBLIC_APP_NAME=VisionCal` etc. (89 UI strings use it) |
-| Hard-coded "Cal.diy" (37 locale files, 27 code files) | `apply.sh` rewrites it — case-sensitive, so `cal.diy` URLs stay |
+| Hard-coded "Cal.diy" (37 locale files, 27 code files, 66 app-store files) | `apply.sh` rewrites it — case-sensitive, so `cal.diy` URLs stay |
 | Logos, icons, favicons, manifest | `public/` — copied over cal.diy's files of the same name |
 | Logo in dark mode | `Logo.tsx` — light/dark images instead of `dark:invert`, which turns the red teal |
 | "Powered by" badge | Off in the account's Appearance settings |
+| Terms / Privacy links on the booking form | Vercel env `NEXT_PUBLIC_WEBSITE_TERMS_URL` / `…PRIVACY_POLICY_URL` → Julavision's pages (default is cal.com's) |
 
 Marks are Russo One (Julavision's display font) as outlines: **VISION** in ink +
 **CAL** in studio red `#e3142b`; icon **V.** with the red dot from "JULAVISION.".

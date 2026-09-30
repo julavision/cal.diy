@@ -18,7 +18,9 @@ cp branding/Logo.tsx packages/ui/components/logo/Logo.tsx
 rebrand() { while IFS= read -r f; do sed -i.vcbak 's/Cal\.diy/VisionCal/g' "$f" && rm -f "$f.vcbak"; done; }
 grep -rlF --include='*.json' 'Cal.diy' packages/i18n/locales | rebrand
 grep -rlF --include='*.ts' --include='*.tsx' --exclude-dir=node_modules --exclude-dir=.next \
-     'Cal.diy' apps/web packages/ui packages/features packages/emails packages/lib \
+     'Cal.diy' apps/web packages/ui packages/features packages/emails packages/lib packages/app-store \
   | grep -v -e '\.test\.' -e '__tests__' -e '/playwright/' -e '\.spec\.' | rebrand
+# app-store cards: publisher names and descriptions ("Published by Cal.diy")
+grep -rlF --include='config.json' --include='*.md' --exclude-dir=node_modules 'Cal.diy' packages/app-store | rebrand
 
 echo "✓ VisionCal branding applied"
