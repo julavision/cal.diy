@@ -12,6 +12,17 @@ cp -R branding/public/. apps/web/public/
 # 2. logo component: light/dark images instead of dark:invert (which turns the red teal)
 cp branding/Logo.tsx packages/ui/components/logo/Logo.tsx
 
+# 3a. app-store cards, BEFORE the name swap below: descriptions are raw markdown
+#     ("Paypal payment app by [Cal.diy](https://cal.com)") shown unrendered, and
+#     Cal-built apps list cal.com as their website and support contact.
+appfix() { while IFS= read -r f; do sed -E -i.vcbak \
+  -e 's#\[(Cal\.diy|Cal\.com|VisionCal)\]\(https://cal\.(com|diy)/?\)#VisionCal#g' \
+  -e 's#"email": ?"(support|help)@cal\.(com|diy)"#"email": "hello@julavision.net"#g' \
+  -e 's#"url": ?"https://cal\.(com|diy)/?"#"url": "https://julavision.net"#g' \
+  "$f" && rm -f "$f.vcbak"; done; }
+grep -rlE --include='config.json' --include='*.md' --exclude-dir=node_modules \
+     '\]\(https://cal\.(com|diy)/?\)|"(support|help)@cal\.(com|diy)"|"url": ?"https://cal\.(com|diy)/?"' packages/app-store | appfix
+
 # 3. the product name wherever cal.diy hard-codes it. Case-sensitive on purpose:
 #    lowercase cal.diy web addresses are left alone. Tests are skipped.
 # portable across GNU sed (Vercel) and BSD sed (a Mac): -i with a suffix, then drop the backup
