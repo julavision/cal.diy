@@ -20,6 +20,7 @@ upstream never conflicts.
 | Logos, icons, favicons, manifest | `public/` — copied over cal.diy's files of the same name |
 | Logo in dark mode | `Logo.tsx` — light/dark images instead of `dark:invert`, which turns the red teal |
 | Logo in the desktop sidebar | `patch-sidebar.mjs` — Cal shows no logo on desktop (that corner is the account menu); adds the wordmark above it. Skips with a warning if upstream moves `SideBar.tsx` |
+| Guest cancellation subject | `patch-cancel-subject.mjs` — upstream bug: the guest's "Canceled: …" subject repeats "between host and guest" (the booking title is fed back through `getEventName`). Uses the booking title as-is when the event has no custom name. Skips with a warning if `email-manager.ts` changes upstream |
 | "Powered by" badge | Off in the account's Appearance settings |
 | Terms / Privacy links on the booking form | Vercel env `NEXT_PUBLIC_WEBSITE_TERMS_URL` / `…PRIVACY_POLICY_URL` → Julavision's pages (default is cal.com's) |
 

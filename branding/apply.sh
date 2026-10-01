@@ -42,5 +42,6 @@ grep -rlF --include='config.json' --include='*.md' --exclude-dir=node_modules 'C
 
 # 4. the wordmark at the top of the desktop sidebar (Cal shows no logo there)
 node branding/patch-sidebar.mjs
+node branding/patch-cancel-subject.mjs
 
 echo "✓ $NAME branding applied"
