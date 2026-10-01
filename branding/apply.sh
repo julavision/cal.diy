@@ -40,4 +40,7 @@ grep -rlF --include='*.ts' --include='*.tsx' --exclude-dir=node_modules --exclud
 # app-store cards: publisher names and descriptions ("Published by Cal.diy")
 grep -rlF --include='config.json' --include='*.md' --exclude-dir=node_modules 'Cal.diy' packages/app-store | rebrand
 
+# 4. the wordmark at the top of the desktop sidebar (Cal shows no logo there)
+node branding/patch-sidebar.mjs
+
 echo "✓ $NAME branding applied"
