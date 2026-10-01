@@ -1,10 +1,10 @@
 import classNames from "@calcom/ui/classNames";
 
-// VisionCal — replaces packages/ui/components/logo/Logo.tsx at build time
+// The product logo — replaces packages/ui/components/logo/Logo.tsx at build time
 // (branding/apply.sh). Cal.diy shows ONE logo and flips it with `dark:invert`
 // in dark mode, which would turn the red "CAL" teal. Instead: the dark-text
 // logo on light backgrounds, the light-text logo on dark ones.
-const NAME = "VisionCal";
+const NAME = "__APP_NAME__"; // filled in by apply.sh from NEXT_PUBLIC_APP_NAME
 const DEFAULT_SRC = "/api/logo";
 
 export function Logo({
