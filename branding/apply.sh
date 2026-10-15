@@ -1,5 +1,5 @@
 #!/bin/sh
-# Product branding (VisCal), applied at BUILD time — first step of the Vercel build
+# Product branding (VisCal by default, or the brand in CAL_BRAND), applied at BUILD time — first step of the Vercel build
 # command. Nothing in cal.diy's own files is committed differently, so
 # "Sync fork" from upstream never conflicts. Upstream changes to the files
 # touched below are simply re-branded on the next build.
@@ -7,12 +7,25 @@ set -e
 cd "$(dirname "$0")/.."
 
 # The name comes from the same Vercel env var the app uses, so renaming is one
-# setting. Letters and digits only — it goes into sed replacements below.
+# setting. Letters, digits and spaces only — it goes into sed replacements below.
 NAME="${NEXT_PUBLIC_APP_NAME:-VisCal}"
-case "$NAME" in *[!A-Za-z0-9]*) echo "NEXT_PUBLIC_APP_NAME must be letters/digits only" >&2; exit 1;; esac
+case "$NAME" in *[!A-Za-z0-9\ ]*) echo "NEXT_PUBLIC_APP_NAME must be letters, digits and spaces only" >&2; exit 1;; esac
+
+# One fork, several booking apps: each Vercel project sets CAL_BRAND to a folder
+# in branding/brands/ (unset = VisCal, whose assets live in branding/public).
+# Contact details for the app-store cards follow the same switch.
+BRAND="${CAL_BRAND:-}"
+SUPPORT="${NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS:-hello@julavision.net}"
+SITE="${BRAND_SITE_URL:-https://julavision.net}"
+case "$SUPPORT$SITE" in *[\#\&\\]*) echo "support address / site URL can't contain # & or \\" >&2; exit 1;; esac
 
 # 1. logos, icons, favicons, manifest — the same filenames cal.diy already serves
-cp -R branding/public/. apps/web/public/
+if [ -n "$BRAND" ]; then
+  [ -d "branding/brands/$BRAND/public" ] || { echo "CAL_BRAND=$BRAND: no branding/brands/$BRAND/public" >&2; exit 1; }
+  cp -R "branding/brands/$BRAND/public/." apps/web/public/
+else
+  cp -R branding/public/. apps/web/public/
+fi
 
 # 2. logo component: light/dark images instead of dark:invert (which turns the red teal)
 cp branding/Logo.tsx packages/ui/components/logo/Logo.tsx
@@ -23,8 +36,8 @@ sed -i.vcbak "s/__APP_NAME__/$NAME/g" packages/ui/components/logo/Logo.tsx && rm
 #     Cal-built apps list cal.com as their website and support contact.
 appfix() { while IFS= read -r f; do sed -E -i.vcbak \
   -e "s#\\[(Cal\\.diy|Cal\\.com)\\]\\(https://cal\\.(com|diy)/?\\)#$NAME#g" \
-  -e 's#"email": ?"(support|help)@cal\.(com|diy)"#"email": "hello@julavision.net"#g' \
-  -e 's#"url": ?"https://cal\.(com|diy)/?"#"url": "https://julavision.net"#g' \
+  -e "s#\"email\": ?\"(support|help)@cal\\.(com|diy)\"#\"email\": \"$SUPPORT\"#g" \
+  -e "s#\"url\": ?\"https://cal\\.(com|diy)/?\"#\"url\": \"$SITE\"#g" \
   "$f" && rm -f "$f.vcbak"; done; }
 grep -rlE --include='config.json' --include='*.md' --exclude-dir=node_modules \
      '\]\(https://cal\.(com|diy)/?\)|"(support|help)@cal\.(com|diy)"|"url": ?"https://cal\.(com|diy)/?"' packages/app-store | appfix

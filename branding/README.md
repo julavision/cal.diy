@@ -1,6 +1,12 @@
-# VisCal branding
+# Branding: VisCal and XL Cal
 
-This fork is Julavision's booking app, **VisCal**, at https://book.julavision.net.
+This fork builds two booking apps from the same code: Julavision's **VisCal** at
+https://book.julavision.net (Vercel project `caldiy`) and Xperience Levels' **XL Cal** at
+https://book.xperiencelevels.com (Vercel project `xlcal`). Each project picks its look with
+the env var `CAL_BRAND`: unset = VisCal (assets in `public/`), `xlcal` = `brands/xlcal/public/`.
+The app-store contact details come from `NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS` and `BRAND_SITE_URL`.
+XL Cal's marks: `brands/xlcal/generate-marks.py` (the X mark from the XL logo + "XL CAL" in
+Montserrat Bold, blue→green like the logo).
 Everything that makes it VisCal instead of Cal.diy lives in this folder and is
 applied **at build time** by `apply.sh` — the first step of the Vercel build command:
 
